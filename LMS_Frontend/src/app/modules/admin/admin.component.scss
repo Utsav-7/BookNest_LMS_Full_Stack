@@ -1,0 +1,23 @@
+.navbar {
+    font-family: 'Georgia', serif;
+
+    .btn-icon {
+        background: none;
+        border: none;
+        padding: 0.5rem;
+        border-radius: 50%;
+        transition: background-color 0.2s ease;
+
+        i {
+            color: #2c3e50;
+        }
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+    }
+
+    img {
+        height: 36px;
+    }
+}

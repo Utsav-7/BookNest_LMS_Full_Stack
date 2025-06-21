@@ -1,0 +1,16 @@
+.badge {
+    &.bg-success {
+        background-color: #198754 !important;
+        color: white !important;
+    }
+
+    &.bg-warning {
+        background-color: #ffc107 !important;
+        color: black !important;
+    }
+
+    &.bg-danger {
+        background-color: #dc3545 !important;
+        color: white !important;
+    }
+}

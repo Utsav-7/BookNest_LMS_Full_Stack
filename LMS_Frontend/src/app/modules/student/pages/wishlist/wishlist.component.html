@@ -1,0 +1,60 @@
+<div class="container-fluid p-3">
+    <div class="d-flex justify-content-between align-items-center mb-3 gap-3">
+        <h4 class="mb-0">My Wishlist</h4>
+        <div class="btn-group" role="group">
+            <button class="btn btn-outline-secondary active">
+                <i class="bi bi-list-ul"></i> Table View
+            </button>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Wishlist ID</th>
+                    <th>Cover</th>
+                    <th>Book Title</th>
+                    <th>Author</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of wishlistItems">
+                    <td>{{ item.wishListId }}</td>
+                    <td>
+                        <div *ngIf="item.coverImageUrl" class="d-flex justify-content-center">
+                            <img [src]="item.coverImageUrl" class="img-thumbnail rounded"
+                                style="width: 50px; height: 70px; object-fit: cover;" alt="Book cover">
+                        </div>
+                        <div *ngIf="!item.coverImageUrl" class="d-flex justify-content-center">
+                            <div class="no-cover" style="width: 50px; height: 70px;">
+                                <i class="bi bi-book"></i>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="fw-semibold">{{ item.title }}</td>
+                    <td>{{ item.author }}</td>
+                    <td class="text-end">
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-danger" title="Remove from Wishlist"
+                                (click)="removeFromWishlist(item.wishListId)">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div *ngIf="wishlistItems.length === 0 && !isLoading" class="alert alert-warning">
+        Your wishlist is currently empty.
+    </div>
+
+    <div class="text-center mt-3">
+        <div *ngIf="isLoading" class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,56 @@
+.custom-navbar {
+    padding: 1rem 2rem;
+    border-bottom: 1px solid black;
+    background-color: #f2f2eb;
+
+    .navbar-brand {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #000;
+        font-family: 'Georgia', serif;
+        white-space: nowrap;
+    }
+
+    .nav-link {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #000;
+        white-space: nowrap;
+
+        &:hover {
+            color: rgba(0, 0, 0, 0.7);
+        }
+    }
+
+    .get-started-btn {
+        border-radius: 20px;
+        padding: 0.5rem 1.2rem;
+        margin-left: 7px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        background-color: #000;
+        color: #fff;
+        white-space: nowrap;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+    }
+}
+
+@media (max-width: 992px) {
+    .custom-navbar {
+        .navbar-collapse {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .navbar-nav {
+            text-align: center;
+        }
+
+        .get-started-btn {
+            margin-top: 10px;
+        }
+    }
+}

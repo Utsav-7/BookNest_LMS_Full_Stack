@@ -1,0 +1,188 @@
+<div class="container-fluid p-3">
+    <div class="d-flex justify-content-between align-items-center mb-3 gap-3">
+        <div class="d-flex gap-3 flex-grow-1">
+            <input type="text" class="form-control" placeholder="Search by name, email, book title"
+                [(ngModel)]="searchTerm" (input)="applyFilters()" />
+
+            <select class="form-select w-auto" [(ngModel)]="statusFilter" (change)="applyFilters()">
+                <option value="">All Statuses</option>
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Rejected">Rejected</option>
+                <option value="Returned">Returned</option>
+            </select>
+        </div>
+
+        <div class="btn-group" role="group">
+            <button class="btn btn-outline-secondary" [class.active]="viewMode === 'table'"
+                (click)="viewMode = 'table'">
+                <i class="bi bi-list-ul"></i> Table
+            </button>
+            <button class="btn btn-outline-secondary" [class.active]="viewMode === 'grid'" (click)="viewMode = 'grid'">
+                <i class="bi bi-grid"></i> Grid
+            </button>
+        </div>
+    </div>
+
+    <div *ngIf="viewMode === 'table'">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>{{ listType === 'Borrow' ? 'Request ID' : 'Return ID' }}</th>
+                        <th>Book Title</th>
+                        <th>User</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Request Date</th>
+                        <th>Due Date</th>
+                        <th *ngIf="listType === 'Return'">Approved Date</th>
+                        <th *ngIf="listType === 'Borrow'">Return Date</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let request of filteredRequests">
+                        <td>
+                            <ng-container *ngIf="isBorrowRequest(request)">{{ request.borrowRequestId }}</ng-container>
+                            <ng-container *ngIf="isReturnRequest(request)">{{ request.returnRequestId }}</ng-container>
+                        </td>
+                        <td class="fw-semibold">{{ request.title }}</td>
+                        <td>{{ request.firstName }} {{ request.lastName }}</td>
+                        <td>{{ request.email }}</td>
+                        <td>
+                            <span class="badge" [ngClass]="{
+                                'bg-warning': request.status === 'Pending',
+                                'bg-success': request.status === 'Approved',
+                                'bg-danger': request.status === 'Rejected',
+                                'bg-info': request.status === 'Returned'
+                            }">
+                                {{ request.status }}
+                            </span>
+                        </td>
+                        <td>{{ request.requestDate | date:'mediumDate' }}</td>
+                        <td>{{ request.dueDate ? (request.dueDate | date:'mediumDate') : 'NA' }}</td>
+
+                        <td *ngIf="listType === 'Return'">
+                            <ng-container *ngIf="isReturnRequest(request)">{{ request.approvedDate || 'N/A'
+                                }}</ng-container>
+                        </td>
+                        <td *ngIf="listType === 'Borrow'">
+                            <ng-container *ngIf="isBorrowRequest(request)">{{ request.returnDate || 'Not returned'
+                                }}</ng-container>
+                        </td>
+
+                        <td class="text-center">
+                            <div class="btn-group btn-group-sm">
+                                <ng-container *ngIf="canShowActions()">
+                                    <button *ngIf="request.status === 'Pending'" class="btn btn-outline-success"
+                                        (click)="updateStatus(isBorrowRequest(request) ? request.borrowRequestId : request.returnRequestId, 'Approved')"
+                                        [disabled]="role !== 'Administrator' && role !== 'Librarian'">
+                                        <i class="bi bi-check-circle"></i> Approve
+                                    </button>
+                                    <button *ngIf="request.status === 'Pending'" class="btn btn-outline-danger"
+                                        (click)="updateStatus(isBorrowRequest(request) ? request.borrowRequestId : request.returnRequestId, 'Rejected')">
+                                        <i class="bi bi-x-circle"></i> Reject
+                                    </button>
+                                </ng-container>
+
+                                <button *ngIf="isBorrowRequest(request) && canReturnBook(request) && role === 'Student'"
+                                    class="btn btn-outline-primary" (click)="openReturnModal(request)">
+                                    <i class="bi bi-arrow-return-left"></i> Return
+                                </button>
+
+                                <button *ngIf="canDelete()" class="btn btn-outline-danger"
+                                    (click)="deleteRequest(isBorrowRequest(request) ? request.borrowRequestId : request.returnRequestId)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+
+                                <p *ngIf="(request.status !== 'Pending' && role === 'Librarian')
+                                        || ((request.status !== 'Approved' && request.status !== 'Pending') && role === 'Student')
+                                ">Processed</p>
+
+                                <p *ngIf="request.status === 'Pending' && role === 'Student'">
+                                    In Progress</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div *ngIf=" filteredRequests.length===0 && !isLoading" class="alert alert-warning">
+            No {{ listType === 'Borrow' ? 'borrow' : 'return' }} requests found matching your
+            criteria.
+        </div>
+    </div>
+
+    <div *ngIf="viewMode === 'grid'" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
+        <div class="col" *ngFor="let request of filteredRequests">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="position-relative mb-3">
+                        <span class="badge position-absolute top-0 end-0 mt-2 me-2" [ngClass]="{
+                            'bg-warning': request.status === 'Pending',
+                            'bg-success': request.status === 'Approved',
+                            'bg-danger': request.status === 'Rejected',
+                            'bg-info': request.status === 'Returned'
+                        }">
+                            {{ request.status }}
+                        </span>
+                        <i class="bi bi-book fs-1 d-block mx-auto"></i>
+                    </div>
+                    <h5 class="card-title">{{ request.title }}</h5>
+                    <p class="card-text">{{ request.firstName }} {{ request.lastName }}</p>
+                    <p class="card-text"><small class="text-muted">{{ request.email }}</small></p>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span><strong>Requested:</strong> {{ request.requestDate | date:'shortDate' }}</span>
+                        <span><strong>Due:</strong> {{ request.dueDate | date:'shortDate' }}</span>
+                    </div>
+
+                    <div *ngIf="isBorrowRequest(request)" class="text-start small mb-2">
+                        <div><strong>Return Date:</strong> {{ request.returnDate || 'Not returned' }}</div>
+                    </div>
+
+                    <div *ngIf="isReturnRequest(request)" class="text-start small mb-2">
+                        <div><strong>Approved Date:</strong> {{ request.approvedDate || 'N/A' }}</div>
+                    </div>
+
+                    <div class="btn-group w-100">
+                        <ng-container *ngIf="canShowActions()">
+                            <button
+                                *ngIf="request.status === 'Pending' && (role === 'Administrator' || role === 'Librarian')"
+                                class="btn btn-outline-success btn-sm"
+                                (click)="updateStatus(isBorrowRequest(request) ? request.borrowRequestId : request.returnRequestId, 'Approved')">
+                                <i class="bi bi-check-circle"></i>
+                            </button>
+                            <button *ngIf="request.status === 'Pending'" class="btn btn-outline-danger btn-sm"
+                                (click)="updateStatus(isBorrowRequest(request) ? request.borrowRequestId : request.returnRequestId, 'Rejected')">
+                                <i class="bi bi-x-circle"></i>
+                            </button>
+                        </ng-container>
+
+                        <button *ngIf="isBorrowRequest(request) && canReturnBook(request) && role === 'Student'"
+                            class="btn btn-outline-primary" (click)="openReturnModal(request)">
+                            <i class="bi bi-arrow-return-left"></i> Return
+                        </button>
+
+                        <button *ngIf="canDelete()" class="btn btn-outline-danger btn-sm"
+                            (click)="deleteRequest(isBorrowRequest(request) ? request.borrowRequestId : request.returnRequestId)">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-3">
+        <div *ngIf="isLoading" class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+</div>
+
+<app-return-book-modal [showModal]="showReturnModal" [borrowRequestId]="selectedRequest?.borrowRequestId || 0"
+    [requestedBy]="userId || 0" (closeModalEvent)="closeReturnModal()" (returnSubmittedEvent)="handleReturnSubmitted()">
+</app-return-book-modal>

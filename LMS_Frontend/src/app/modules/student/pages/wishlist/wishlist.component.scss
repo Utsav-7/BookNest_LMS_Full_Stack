@@ -1,0 +1,18 @@
+.no-cover {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    color: #6c757d;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+
+    &:i {
+        font-size: 1.25rem;
+    }
+}
+
+.img-thumbnail {
+    border: 1px solid #dee2e6;
+    padding: 0;
+}

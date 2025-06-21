@@ -1,0 +1,43 @@
+<div class="book-card" [class.compact]="displayMode === 'compact'" [class.detailed]="displayMode === 'detailed'">
+    <div class="book-cover">
+        <img *ngIf="book.coverImageUrl; else bookIcon" [src]="book.coverImageUrl" alt="{{book.title}}">
+        <ng-template #bookIcon>
+            <i class="bi bi-book"></i>
+        </ng-template>
+    </div>
+
+    <div class="book-details">
+        <h5 class="book-title">{{book.title}}</h5>
+
+        <div class="book-info">
+            <p class="book-author">{{book.author}}</p>
+            <span class="badge genre-badge text-white align-items-center bg-secondary">{{book.genreName}}</span>
+        </div>
+
+        <div class="book-availability" *ngIf="displayMode === 'detailed'">
+            <span class="available" [class.low-stock]="book.availableCopies <= 3 && book.availableCopies > 0"
+                [class.out-of-stock]="book.availableCopies === 0">
+                {{book.availableCopies}} available
+            </span>
+            <span class="total-copies">of {{book.totalCopies}}</span>
+        </div>
+
+        <div class="book-actions" *ngIf="showActions">
+            <button class="btn btn-sm btn-outline-primary" title="View" (click)="viewBook.emit(book)">
+                <i class="bi bi-eye"></i>
+            </button>
+            <button *ngIf="userRole !== 'Student'" class="btn btn-sm btn-outline-secondary" title="Edit"
+                (click)="editBook.emit(book)">
+                <i class="bi bi-pencil"></i>
+            </button>
+            <button *ngIf="showDeleteButton" class="btn btn-outline-danger" title="Delete"
+                (click)="deleteBook.emit(book.id)">
+                <i class="bi bi-trash"></i>
+            </button>
+            <button *ngIf="book.availableCopies > 0 && userRole=== 'Student'" class="btn btn-outline-success"
+                title="Borrow book" (click)="borrowBook.emit(book.id)">
+                <i class="bi bi-book"></i>
+            </button>
+        </div>
+    </div>
+</div>

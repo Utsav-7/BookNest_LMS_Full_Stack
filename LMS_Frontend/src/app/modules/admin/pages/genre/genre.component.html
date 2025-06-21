@@ -1,0 +1,92 @@
+<div class="container-fluid p-3">
+    <div class="d-flex justify-content-between align-items-center mb-3 gap-3">
+        <input type="text" class="form-control w-50" placeholder="Search by genre name" [(ngModel)]="searchTerm"
+            (input)="applyFilters()" />
+
+        <button class="btn btn-primary" (click)="onAddGenre()">
+            <i class="bi bi-plus-circle me-1"></i> Add Genre
+        </button>
+    </div>
+
+    <div *ngIf="showAddForm" class="card card-body mb-3 shadow-sm">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <input type="text" class="form-control" [(ngModel)]="newGenre.genreName"
+                    placeholder="Enter genre name" />
+            </div>
+            <div class="col-md-4">
+                <input type="text" class="form-control" [(ngModel)]="newGenre.description"
+                    placeholder="Enter description (optional)" />
+            </div>
+            <div class="col-md-4 d-flex gap-2">
+                <button class="btn btn-success w-100" (click)="onSaveNewGenre()">
+                    <i class="bi bi-check2-circle me-1"></i> Save
+                </button>
+                <button class="btn btn-outline-secondary w-100" (click)="cancelAddGenre()">
+                    <i class="bi bi-x-circle me-1"></i> Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th style="width: 80px">#ID</th>
+                    <th>Genre Name</th>
+                    <th>Description</th>
+                    <th class="text-center" style="width: 160px">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let genre of filteredGenres">
+                    <td class="fw-semibold">{{ genre.genreId }}</td>
+
+                    <td>
+                        <input *ngIf="editGenreId === genre.genreId" type="text" class="form-control"
+                            [(ngModel)]="editedGenre.genreName" />
+                        <span *ngIf="editGenreId !== genre.genreId">{{ genre.genreName }}</span>
+                    </td>
+
+                    <td>
+                        <input *ngIf="editGenreId === genre.genreId" type="text" class="form-control"
+                            [(ngModel)]="editedGenre.description" />
+                        <span *ngIf="editGenreId !== genre.genreId">{{ genre.description || '—' }}</span>
+                    </td>
+
+                    <td class="text-center">
+                        <div class="btn-group btn-group-sm" *ngIf="editGenreId !== genre.genreId">
+                            <button class="btn btn-outline-secondary" title="Edit" (click)="onEditGenre(genre)">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-outline-danger" title="Delete"
+                                (click)="onDeleteGenre(genre.genreId)">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+
+                        <div class="btn-group btn-group-sm" *ngIf="editGenreId === genre.genreId">
+                            <button class="btn btn-success" title="Save" (click)="onSaveGenre()">
+                                <i class="bi bi-check2"></i>
+                            </button>
+                            <button class="btn btn-secondary" title="Cancel" (click)="onCancelEdit()">
+                                <i class="bi bi-x"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div *ngIf="filteredGenres.length === 0 && !isLoading" class="alert alert-warning mt-3">
+        No genres found.
+    </div>
+
+    <div class="text-center">
+        <div *ngIf="isLoading" class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+</div>

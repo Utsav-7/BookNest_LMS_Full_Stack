@@ -1,0 +1,124 @@
+<div class="container-fluid p-3">
+    <div class="d-flex justify-content-between align-items-center mb-3 gap-3">
+        <input type="text" class="form-control w-50" placeholder="Search by title, author, genre"
+            [(ngModel)]="searchTerm" (input)="applyFilters()" />
+
+        <select class="form-select w-auto" [(ngModel)]="availabilityFilter" (change)="applyFilters()">
+            <option value="all">All</option>
+            <option value="available">Available</option>
+        </select>
+
+        <div class="btn-group" role="group">
+            <button class="btn btn-outline-secondary" [class.active]="viewMode === 'table'"
+                (click)="viewMode = 'table'">
+                <i class="bi bi-list-ul"></i> Table
+            </button>
+            <button class="btn btn-outline-secondary" [class.active]="viewMode === 'grid'" (click)="viewMode = 'grid'">
+                <i class="bi bi-grid"></i> Grid
+            </button>
+        </div>
+
+        <button *ngIf="canAddBooks()" class="btn btn-primary ms-auto" (click)="openAddBookModal()">
+            <i class="bi bi-plus-circle"></i> Add Book
+        </button>
+    </div>
+
+    <div class="card flex justify-content-center mb-3">
+        <p-paginator (onPageChange)="onPageChange($event)" [first]="first" [rows]="rows" [totalRecords]="totalRecords"
+            [rowsPerPageOptions]="[10, 20, 30]"></p-paginator>
+    </div>
+
+    <div *ngIf="viewMode === 'table' && filteredBooks.length > 0" class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th style="width: 60px">Cover</th>
+                    <th>Author</th>
+                    <th>Genre</th>
+                    <th class="text-center">Total</th>
+                    <th class="text-center">Available</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let book of filteredBooks">
+                    <td>
+                        <app-book-card [book]="book" displayMode="compact"></app-book-card>
+                    </td>
+                    <td>{{ book.author }}</td>
+                    <td><span class="badge bg-light text-dark">{{ book.genreName }}</span></td>
+                    <td class="text-center">{{ book.totalCopies }}</td>
+                    <td class="text-center" [class.text-success]="book.availableCopies > 3"
+                        [class.text-warning]="book.availableCopies <= 3 && book.availableCopies > 0"
+                        [class.text-danger]="book.availableCopies === 0">
+                        {{ book.availableCopies }}
+                    </td>
+                    <td class="text-center">
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button class="btn btn-outline-primary" title="View" (click)="openBookDetails(book)">
+                                <i class="bi bi-eye"></i>
+                            </button>
+
+                            <ng-container *ngIf="role === 'Administrator'">
+                                <button class="btn btn-outline-secondary" title="Edit"
+                                    (click)="openEditBookModal(book)">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" title="Delete" (click)="deleteBook(book.id)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </ng-container>
+
+                            <ng-container *ngIf="role === 'Librarian'">
+                                <button class="btn btn-outline-secondary" title="Edit"
+                                    (click)="openEditBookModal(book)">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                            </ng-container>
+
+                            <ng-container *ngIf="role === 'Student'">
+                                <button *ngIf="book.availableCopies === 0" class="btn btn-outline-warning"
+                                    title="Add to wishlist" (click)="addToWishlist(book)">
+                                    <i class="bi bi-bookmark-heart"></i>
+                                </button>
+                                <button *ngIf="book.availableCopies > 0" class="btn btn-outline-success"
+                                    title="Borrow book" (click)="borrowBook(book.id)">
+                                    <i class="bi bi-book"></i>
+                                </button>
+                            </ng-container>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div *ngIf="filteredBooks.length === 0 && !isLoading" class="alert alert-warning">No books found.</div>
+
+    <div class="text-center">
+        <div *ngIf="isLoading" class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <div *ngIf="viewMode === 'grid' && filteredBooks.length > 0"
+        class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
+        <div class="col" *ngFor="let book of filteredBooks">
+            <app-book-card [book]="book" displayMode="detailed" [showActions]="true" [userRole]="role"
+                [showDeleteButton]="role === 'Administrator'" (viewBook)="openBookDetails($event)"
+                (editBook)="openEditBookModal(book)" (deleteBook)="deleteBook(book.id)"
+                (addToWishlist)="addToWishlist(book)" (borrowBook)="borrowBook(book.id)"
+                (returnBook)="returnBook(book)">
+            </app-book-card>
+        </div>
+    </div>
+
+    <app-book-form-modal [book]="currentBook" [showModal]="showModal" [role]="role" (closeModal)="closeModal()"
+        (submitForm)="handleSubmit($event)">
+    </app-book-form-modal>
+
+    <app-book-details-card [book]="selectedBook" [showModal]="showDetailsModal" (closeModal)="showDetailsModal = false">
+    </app-book-details-card>
+</div>
+
+<app-loader *ngIf="isLoadingRequest"></app-loader>

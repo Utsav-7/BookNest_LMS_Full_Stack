@@ -1,0 +1,25 @@
+.modal-backdrop.show {
+    opacity: 0.5;
+}
+
+.modal {
+    backdrop-filter: blur(5px);
+}
+
+.modal.show {
+    display: block;
+    opacity: 1;
+}
+
+.modal.fade {
+    transition: opacity 0.15s linear;
+}
+
+.modal-content {
+    border-radius: 0.5rem;
+}
+
+.btn-close {
+    font-size: 0.75rem;
+    padding: 0.5rem;
+}

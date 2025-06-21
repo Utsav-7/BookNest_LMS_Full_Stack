@@ -1,0 +1,116 @@
+<div class="container-fluid p-3">
+    <div class="d-flex justify-content-between align-items-center mb-3 gap-3">
+        <input type="text" class="form-control w-50" placeholder="Search by title, status" [(ngModel)]="searchTerm"
+            (input)="applyFilters()" />
+
+        <select class="form-select w-auto" [(ngModel)]="statusFilter" (change)="applyFilters()">
+            <option value="all">All Statuses</option>
+            <option value="Borrowed">Borrowed</option>
+            <option value="Returned">Returned</option>
+            <option value="Overdue">Overdue</option>
+        </select>
+
+        <div class="btn-group" role="group">
+            <button class="btn btn-outline-secondary" [class.active]="viewMode === 'table'"
+                (click)="viewMode = 'table'">
+                <i class="bi bi-list-ul"></i> Table
+            </button>
+            <button class="btn btn-outline-secondary" [class.active]="viewMode === 'grid'" (click)="viewMode = 'grid'">
+                <i class="bi bi-grid"></i> Grid
+            </button>
+        </div>
+    </div>
+
+    <div *ngIf="viewMode === 'table'" class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Request ID</th>
+                    <th>Cover Page</th>
+                    <th>Book Title</th>
+                    <th>Issue Date</th>
+                    <th>Due Date</th>
+                    <th>Return Date</th>
+                    <th class="text-end">Penalty</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let transaction of filteredTransactions">
+                    <td>{{ transaction.borrowRequestId }}</td>
+                    <td class="fw-semibold">
+                        <div class="d-flex align-items-center gap-2">
+                            <img *ngIf="transaction.coverImageUrl" [src]="transaction.coverImageUrl"
+                                class="img-thumbnail rounded" style="width: 50px; height: 70px; object-fit: cover;"
+                                alt="Book cover">
+                        </div>
+                    </td>
+                    <td class="fw-semibold">{{ transaction.title }}</td>
+                    <td>{{ transaction.issuedDate ? (transaction.issuedDate | date:'mediumDate') : 'NA' }}</td>
+                    <td>{{ transaction.dueDate ? (transaction.dueDate | date:'mediumDate') : 'NA' }}</td>
+                    <td>{{ transaction.returnDate ? (transaction.returnDate | date:'mediumDate') : 'NA' }}</td>
+                    <td class="text-end">{{ transaction.penalty | currency:'INR':'symbol':'1.2-2' }}</td>
+                    <td>
+                        <span class="badge" [ngClass]="{
+                            'bg-primary': transaction.status === 'Borrowed',
+                            'bg-success': transaction.status === 'Returned',
+                            'bg-danger': transaction.status === 'Overdue'
+                        }">
+                            {{ transaction.status }}
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div *ngIf="filteredTransactions.length === 0 && !isLoading" class="alert alert-warning">
+        No transactions found matching your criteria.
+    </div>
+
+    <div *ngIf="viewMode === 'grid'" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
+        <div class="col" *ngFor="let transaction of filteredTransactions">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="position-relative mb-3">
+                        <span class="badge position-absolute top-0 end-0 mt-2 me-2" [ngClass]="{
+                                        'bg-primary': transaction.status === 'Borrowed',
+                                        'bg-success': transaction.status === 'Returned',
+                                        'bg-danger': transaction.status === 'Overdue'
+                                    }">
+                            {{ transaction.status }}
+                        </span>
+                        <div class="text-center mb-2">
+                            <img *ngIf="transaction.coverImageUrl" [src]="transaction.coverImageUrl"
+                                class="img-thumbnail rounded" style="width: 100px; height: 140px; object-fit: cover;"
+                                alt="Book cover">
+                        </div>
+                        <h5 class="card-title text-center">{{ transaction.title }}</h5>
+                    </div>
+
+                    <div class="mb-2">
+                        <div><strong>Request ID:</strong> {{ transaction.borrowRequestId }}</div>
+                        <div><strong>Issue Date:</strong> {{ transaction.issuedDate ? (transaction.issuedDate |
+                            date:'mediumDate') : 'NA' }}</div>
+                        <div><strong>Due Date:</strong> {{ transaction.dueDate ? (transaction.dueDate |
+                            date:'mediumDate') : 'NA' }}</div>
+                        <div><strong>Return Date:</strong> {{ transaction.returnDate ? (transaction.returnDate |
+                            date:'mediumDate') : 'NA' }}</div>
+                    </div>
+
+                    <div class="text-end">
+                        <div class="fw-bold" [class.text-danger]="transaction.penalty > 0">
+                            {{ transaction.penalty | currency:'INR':'symbol':'1.2-2' }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-3">
+        <div *ngIf="isLoading" class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+</div>

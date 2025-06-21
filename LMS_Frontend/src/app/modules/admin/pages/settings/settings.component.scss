@@ -1,0 +1,17 @@
+.settings-container {
+    max-width: 600px;
+    margin: auto;
+
+    .setting-group {
+        margin-bottom: 20px;
+    }
+
+    input[readonly] {
+        background-color: #f0f0f0;
+        cursor: not-allowed;
+    }
+
+    button {
+        min-width: 100px;
+    }
+}

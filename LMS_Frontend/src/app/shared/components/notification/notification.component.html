@@ -1,0 +1,30 @@
+<div class="notification-overlay" *ngIf="isOpen" (click)="onClose()"></div>
+
+<div class="notification-container" *ngIf="isOpen" [class.show]="isOpen">
+    <div class="notification-header">
+        <h5>Notifications</h5>
+    </div>
+
+    <div class="notification-body">
+        <div *ngIf="loading" class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+
+        <div *ngIf="!loading && notifications.length === 0" class="text-center py-4 text-muted">
+            No new notifications
+        </div>
+
+        <div *ngFor="let notification of notifications" class="notification-item" [class.read]="notification.isRead">
+            <div class="notification-content">
+                <p class="mb-1">{{ notification.message }}</p>
+            </div>
+            <button *ngIf="!notification.isRead" class="btn btn-sm btn-outline-secondary"
+                (click)="markAsRead(notification.notificationId)">
+                Mark as read
+            </button>
+            <span *ngIf="notification.isRead" class="badge bg-success">Read</span>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,9 @@
+<app-dashboard-navbar [role]="role"></app-dashboard-navbar>
+
+<div class="d-flex w-100" style="height: calc(100vh - 65px);">
+    <app-sidebar [sidebarOptions]="sidebarOptions"></app-sidebar>
+
+    <div class="flex-grow-1 overflow-auto p-3">
+        <router-outlet></router-outlet>
+    </div>
+</div>

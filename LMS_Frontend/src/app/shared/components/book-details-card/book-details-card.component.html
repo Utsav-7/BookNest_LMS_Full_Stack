@@ -1,0 +1,62 @@
+<div class="modal-backdrop fade" [class.show]="showModal" [style.display]="showModal ? 'block' : 'none'"></div>
+
+<div class="modal fade" [class.show]="showModal" [style.display]="showModal ? 'block' : 'none'" tabindex="-1"
+    role="dialog" (click)="onModalClick($event)">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body p-0">
+                <div class="card border-0" *ngIf="book">
+                    <div class="row g-0">
+                        <div class="col-md-5 d-flex align-items-center bg-light p-4">
+                            <img [src]="book.coverImageUrl || 'assets/images/default-book-cover.jpg'"
+                                alt="{{book.title}} cover" class="img-fluid rounded-start mx-auto d-block"
+                                style="max-height: 400px; object-fit: contain;">
+                        </div>
+
+                        <div class="col-md-7">
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h2 class="card-title mb-1">{{book.title}}</h2>
+                                        <p class="text-muted mb-3">by {{book.author}}</p>
+                                    </div>
+                                    <button type="button" class="btn-close" (click)="closeModal.emit()"
+                                        aria-label="Close"></button>
+                                </div>
+
+                                <hr class="my-3">
+
+                                <div class="row mb-3">
+                                    <div class="col-6">
+                                        <p class="mb-2"><strong>Genre:</strong><br>{{book.genreName || 'N/A'}}</p>
+                                        <p class="mb-2"><strong>Publisher:</strong><br>{{book.publisher || 'N/A'}}</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="mb-2"><strong>Published:</strong><br>{{book.publicationYear |
+                                            date:'yyyy'}}</p>
+                                        <p class="mb-2"><strong>ISBN:</strong><br>{{book.isbn || 'N/A'}}</p>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex gap-3 mb-3">
+                                    <span class="badge bg-primary rounded-pill">
+                                        Total: {{book.totalCopies}}
+                                    </span>
+                                    <span class="badge" [class.bg-success]="book.availableCopies > 0"
+                                        [class.bg-danger]="book.availableCopies === 0">
+                                        Available: {{book.availableCopies}}
+                                    </span>
+                                </div>
+
+                                <div *ngIf="book.description" class="mb-3">
+                                    <h5 class="fs-5">Description</h5>
+                                    <p class="card-text">{{book.description}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

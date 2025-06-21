@@ -1,0 +1,14 @@
+<div class="sidebar shadow-sm">
+    <div *ngFor="let group of sidebarOptions" class="menu-section">
+        <div class="section-title">{{group.section}}</div>
+        <ul class="nav flex-column">
+            <li class="nav-item" *ngFor="let item of group.items">
+                <a class="nav-link" [routerLink]="item.route" routerLinkActive="active"
+                    [routerLinkActiveOptions]="{exact: true}">
+                    <i class="{{item.icon}} me-2"></i>
+                    {{item.label}}
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>

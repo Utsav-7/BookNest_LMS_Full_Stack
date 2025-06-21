@@ -1,0 +1,84 @@
+<div *ngIf="showModal" class="modal-backdrop-blur" (click)="close.emit()"></div>
+
+<div class="custom-modal shadow-lg" *ngIf="showModal" [class.show]="showModal">
+    <div class="modal-header">
+        <h5 class="modal-title">{{ isEditMode ? 'Edit User' : 'Add User' }}</h5>
+        <button class="btn-close" (click)="close.emit()"></button>
+    </div>
+
+    <div class="modal-body">
+        <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+
+            <div class="mb-3">
+                <label>First Name</label>
+                <input formControlName="firstName" class="form-control"
+                    [ngClass]="{ 'is-invalid': userForm.get('firstName')?.invalid && (userForm.get('firstName')?.touched || userForm.get('firstName')?.dirty) }" />
+                <div class="invalid-feedback"
+                    *ngIf="userForm.get('firstName')?.invalid && (userForm.get('firstName')?.touched || userForm.get('firstName')?.dirty)">
+                    <span *ngIf="userForm.get('firstName')?.errors?.['required']">First name is required</span>
+                    <span *ngIf="userForm.get('firstName')?.errors?.['onlyNumber']">Numbers are not valid</span>
+                    <span *ngIf="userForm.get('firstName')?.errors?.['invalidName']">Only alphabetic characters are
+                        allowed</span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label>Last Name</label>
+                <input formControlName="lastName" class="form-control"
+                    [ngClass]="{ 'is-invalid': userForm.get('lastName')?.invalid && (userForm.get('lastName')?.touched || userForm.get('lastName')?.dirty) }" />
+                <div class="invalid-feedback"
+                    *ngIf="userForm.get('lastName')?.invalid && (userForm.get('lastName')?.touched || userForm.get('lastName')?.dirty)">
+                    <span *ngIf="userForm.get('lastName')?.errors?.['required']">Last name is required</span>
+                    <span *ngIf="userForm.get('lastName')?.errors?.['onlyNumber']">Numbers are not valid</span>
+                    <span *ngIf="userForm.get('lastName')?.errors?.['invalidName']">Only alphabetic characters are
+                        allowed</span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label>Email</label>
+                <input formControlName="email" class="form-control"
+                    [ngClass]="{ 'is-invalid': userForm.get('email')?.invalid && (userForm.get('email')?.touched || userForm.get('email')?.dirty) }" />
+                <div class="invalid-feedback"
+                    *ngIf="userForm.get('email')?.invalid && (userForm.get('email')?.touched || userForm.get('email')?.dirty)">
+                    <span *ngIf="userForm.get('email')?.errors?.['required']">Email is required</span>
+                    <span
+                        *ngIf="userForm.get('email')?.errors?.['email'] || userForm.get('email')?.errors?.['invalidEmail']">
+                        Please enter a valid email address (e.g., user&#64;example.com)
+                    </span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label>Mobile No</label>
+                <input formControlName="mobileNo" class="form-control"
+                    [ngClass]="{ 'is-invalid': userForm.get('mobileNo')?.invalid && (userForm.get('mobileNo')?.touched || userForm.get('mobileNo')?.dirty) }" />
+                <div class="invalid-feedback"
+                    *ngIf="userForm.get('mobileNo')?.invalid && (userForm.get('mobileNo')?.touched || userForm.get('mobileNo')?.dirty)">
+                    <span *ngIf="userForm.get('mobileNo')?.errors?.['required']">Mobile number is required</span>
+                    <span *ngIf="userForm.get('mobileNo')?.errors?.['invalidIndianMobile']">
+                        Please enter a valid 10-digit Indian mobile number starting with 6–9
+                    </span>
+                </div>
+            </div>
+
+            <div class="mb-3" *ngIf="!isEditMode">
+                <label>Password</label>
+                <input type="password" formControlName="passwordHash" class="form-control"
+                    [ngClass]="{ 'is-invalid': userForm.get('passwordHash')?.invalid && (userForm.get('passwordHash')?.touched || userForm.get('passwordHash')?.dirty) }" />
+                <div class="invalid-feedback"
+                    *ngIf="userForm.get('passwordHash')?.invalid && (userForm.get('passwordHash')?.touched || userForm.get('passwordHash')?.dirty)">
+                    <span *ngIf="userForm.get('passwordHash')?.errors?.['required']">Password is required</span>
+                    <span *ngIf="userForm.get('passwordHash')?.errors?.['invalidPassword']">
+                        Password must contain 6–12 characters with at least one uppercase, one lowercase, one number,
+                        and one '&#64;' symbol
+                    </span>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" type="submit" [disabled]="userForm.invalid">
+                {{ isEditMode ? 'Update' : 'Add' }}
+            </button>
+        </form>
+    </div>
+</div>

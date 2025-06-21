@@ -1,0 +1,8 @@
+<app-header *ngIf="showHeaderFooter"></app-header>
+
+<div class="main-content">
+  <p-toast></p-toast>
+  <router-outlet></router-outlet>
+</div>
+
+<app-footer *ngIf="showHeaderFooter"></app-footer>
